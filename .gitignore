@@ -1,0 +1,6 @@
+# Folders
+execute/
+__pycache__/
+
+# Files
+configs.json
