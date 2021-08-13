@@ -5,8 +5,6 @@
 '''
 
 # Imports
-import pathlib
-
 from os import walk, system as execute
 from time import sleep as wait
 
@@ -25,7 +23,7 @@ codes = {
   'nano': 'Nano',
 }
 
-scriptFiles = str(pathlib.Path().resolve()) + '\execute'
+scriptFiles = getPath()
 codeEditor = codes[getEditor()]
 
 # Utils
@@ -43,13 +41,16 @@ def executeScript():
   scripts = getScripts()
   items = [] 
 
-  for script in scripts:
-    count = count + 1
-    if count <= 9:
-      items.append('    [{}]: Script {}'.format(c('0'+str(count), 'cyan'), script))
-    else:
-      items.append('    [{}]: Script {}'.format(c(str(count), 'cyan'), script))
-    pass
+  if len(scripts) > 0:
+    for script in scripts:
+      count = count + 1
+      if count <= 9:
+        items.append('    [{}]: Script {}'.format(c('0'+str(count), 'cyan'), script))
+      else:
+        items.append('    [{}]: Script {}'.format(c(str(count), 'cyan'), script))
+      pass
+  else:
+    items.append('    [{}]: Não há Scripts vá para a opção numero {} e crie um novo.'.format(c('-', 'cyan'), c('2', 'green')))
 
   items.append('\n    [{}]: Voltar para o menu...'.format(c('00', 'red')))
 
@@ -62,24 +63,22 @@ def executeScript():
   print(c('\n    :>]', 'green'), 'Selecione um script')
   script = input(c('    :>> ', 'green'))
 
-  print(c('\n    :>]', 'green'), 'Você deseja usar algum argumento? [Y/n]')
-  arg = input(c('    :>> ', 'green'))
-  args = []
-
-  print(c('\n    :>]', 'green'), 'Args:')
-  if arg == '' or arg.upper().split()[0] in ['Y', 'S']:
-    while True:
-      argNew = input(c('    :>> ', 'green'))
-      if argNew != '':
-        args.append(argNew)
-      else:
-        break
-      
-    pass
-
-  if script != '':
+  if script.replace(' ', '') != '':
     if int(script) <= 9: script = f'0{script}'
     if f'0{script}.py' in scripts:
+      print(c('\n    :>]', 'green'), 'Você deseja usar algum argumento? [Y/n]')
+      arg = input(c('    :>> ', 'green'))
+      args = []
+
+      print(c('\n    :>]', 'green'), 'Args:')
+      if arg == '' or arg.upper().split()[0] in ['Y', 'S']:
+        while True:
+          argNew = input(c('    :>> ', 'green'))
+          if argNew != '':
+            args.append(argNew)
+          else:
+            break
+
       banner()
       
       if arg.upper().split()[0] in ['Y', 'S']:
@@ -90,7 +89,6 @@ def executeScript():
         execute(f'python "{scriptFiles}\\0{script}.py"')
       print('\033[00m\n')
       input('    {} Pressione enter para voltar ao menu....'.format(c(':>>', 'green')))
-      wait(3)
       return 'restart'
     elif script in ['0', '00']:
       return 'restart'
@@ -134,13 +132,16 @@ def editScript():
   items = [] 
   count = 0
 
-  for script in scripts:
-    count = count + 1
-    if count <= 9:
-      items.append('    [{}]: Script {}'.format(c('0'+str(count), 'cyan'), script))
-    else:
-      items.append('    [{}]: Script {}'.format(c(str(count), 'cyan'), script))
-    pass
+  if len(scripts) > 0:
+    for script in scripts:
+      count = count + 1
+      if count <= 9:
+        items.append('    [{}]: Script {}'.format(c('0'+str(count), 'cyan'), script))
+      else:
+        items.append('    [{}]: Script {}'.format(c(str(count), 'cyan'), script))
+      pass
+  else:
+    items.append('    [{}]: Não há Scripts vá para a opção numero {} e crie um novo.'.format(c('-', 'cyan'), c('2', 'green')))
 
   items.append('\n    [{}]: Voltar para o menu...'.format(c('00', 'red')))
 
@@ -153,14 +154,58 @@ def editScript():
 
   script = input(c('    :>> ', 'green'))
 
-  if script != '':
-    if int(script) <= 9: script = f'0{script}'
-    if f'0{script}.py' in scripts:
-      print(c('    :>>', 'green'), 'Abrindo', codeEditor, 'no script', c(f'0{script}.py', 'cyan'), 'em ./execute')
+  if int(script) >= 9: nmScript = f'0{len(scripts)}.py'
+  else: nmScript = f'00{len(scripts)}.py'
+
+  if script.replace(' ', '') != '':
+    if nmScript in scripts:
+      print(c('    :>>', 'green'), 'Abrindo', codeEditor, 'no script', c(f'{nmScript}', 'cyan'), f'em "{getPath()}".')
       wait(0.5)
       execute(f'{getEditor()} "{getPath()}\\"')
       wait(0.3)
-      execute(f'{getEditor()} "{getPath()}\\0{script}.py"')
+      execute(f'{getEditor()} "{getPath()}\\{nmScript}"')
+      input('    {} Pressione enter para voltar ao menu....'.format(c(':>>', 'green')))
+    elif script in ['0', '00']:
+      return 'restart'
+    else:
+      return 'error'
+  else:
+    return 'error'
+
+def delScript():
+  scripts = getScripts()
+  items = [] 
+  count = 0
+
+  if len(scripts) > 0:
+    for script in scripts:
+      count = count + 1
+      if count <= 9:
+        items.append('    [{}]: Script {}'.format(c('0'+str(count), 'cyan'), script))
+      else:
+        items.append('    [{}]: Script {}'.format(c(str(count), 'cyan'), script))
+      pass
+  else:
+    items.append('    [{}]: Não há Scripts vá para a opção numero {} e crie um novo.'.format(c('-', 'cyan'), c('2', 'green')))
+
+  items.append('\n    [{}]: Voltar para o menu...'.format(c('00', 'red')))
+
+  banner()
+  print('=== Deletar Script\n')
+  for item in items:
+    print(item)
+  
+  print(c('\n    :>]', 'green'), 'Selecione um script')
+
+  script = input(c('    :>> ', 'green'))
+
+  if int(script) >= 9: nmScript = f'0{len(scripts)}.py'
+  else: nmScript = f'00{len(scripts)}.py'
+
+  if script.replace(' ', '') != '':
+    if nmScript in scripts:
+      print('\n    {} Script {}.py {}.'.format(c(':>>', 'green'), nmScript, c('deletado', 'red')))
+      execute(f'rm "{getPath()}\\{nmScript}"')
       input('    {} Pressione enter para voltar ao menu....'.format(c(':>>', 'green')))
     elif script in ['0', '00']:
       return 'restart'
@@ -169,8 +214,3 @@ def editScript():
   else:
     return 'error'
   
-  return 'restart'
-
-def delScript():
-  
-  return 'restart'
