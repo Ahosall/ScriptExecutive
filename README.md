@@ -17,7 +17,7 @@ $ git clone https://github.com/Ahosall/ScriptExecutive
 ### Inicialização
 > **Antes de tudo...**
 >
-> Antes de seguir o resto, execute o setup.py.
+> Antes de iniciar o programa, execute o setup.py.
 > ```bash
 > $ python3 setup.py
 > ```
